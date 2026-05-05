@@ -85,10 +85,10 @@ def count(
         import json
 
         result: dict[str, object] = {
-            \"source\": source,
-            \"encoding\": encoding,
-            \"tokens\": token_count,
-            \"characters\": len(content),
+            "source": source,
+            "encoding": encoding,
+            "tokens": token_count,
+            "characters": len(content),
         }
         if cost:
             est = estimate_cost(token_count, model)
@@ -116,14 +116,14 @@ def count(
 
 
 @click.command()
-@click.argument(\"text\")
+@click.argument("text")
 @click.option(
     "--encoding",
     "-e",
     default="cl100k_base",
     help="Tokenizer encoding (default: cl100k_base).",
 )
-@click.option(\"--numbered\", \"-n\", is_flag=True, help=\"Show token IDs alongside strings.\")
+@click.option("--numbered", "-n", is_flag=True, help="Show token IDs alongside strings.")
 def split(text: str, encoding: str, numbered: bool) -> None:
     """Visualize how text is split into tokens."""
     enc = tiktoken.get_encoding(encoding)
