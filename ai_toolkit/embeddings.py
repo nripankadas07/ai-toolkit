@@ -2,12 +2,26 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
+from importlib import import_module
+from typing import Any, Protocol, cast
+
 import click
 import numpy as np
+from numpy.typing import NDArray
 from rich.console import Console
 from rich.table import Table
 
 console = Console()
+
+FloatArray = NDArray[np.float32]
+
+
+class EmbeddingModel(Protocol):
+    """Minimal protocol for optional sentence-transformers models."""
+
+    def encode(self, texts: list[str]) -> Iterable[Any]:
+        """Encode texts into array-like vectors."""
 
 
 def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
@@ -29,27 +43,30 @@ def dot_product(a: np.ndarray, b: np.ndarray) -> float:
     return float(np.dot(a, b))
 
 
-def _get_embeddings(texts: list[str], model_name: str) -> list[np.ndarray]:
+def _get_embeddings(texts: list[str], model_name: str) -> list[FloatArray]:
     """Generate embeddings for a list of texts.
 
     Falls back to a simple hash-based embedding if sentence-transformers
     is not installed, so the CLI remains functional without heavy deps.
     """
     try:
-        from sentence_transformers import SentenceTransformer
-
-        model = SentenceTransformer(model_name)
+        module = import_module("sentence_transformers")
+        model_factory = cast(
+            Callable[[str], EmbeddingModel],
+            getattr(module, "SentenceTransformer"),
+        )
+        model = model_factory(model_name)
         embeddings = model.encode(texts)
-        return [np.array(e) for e in embeddings]
+        return [np.asarray(e, dtype=np.float32) for e in embeddings]
     except ImportError:
         console.print(
             "[yellow]sentence-transformers not installed. "
-            "Using hash-based fallback (install with: pip install ai-toolkit[embeddings])[/yellow]"
+            'Using hash-based fallback (from a checkout: pip install -e ".[embeddings]")[/yellow]'
         )
         return [_hash_embedding(t) for t in texts]
 
 
-def _hash_embedding(text: str, dim: int = 128) -> np.ndarray:
+def _hash_embedding(text: str, dim: int = 128) -> FloatArray:
     """Create a deterministic pseudo-embedding from text hash.
 
     This is NOT a real embedding — it's a fallback for demo/testing
@@ -62,13 +79,13 @@ def _hash_embedding(text: str, dim: int = 128) -> np.ndarray:
     while len(h) < dim * 4:
         h += hashlib.sha512(h).digest()
     raw = np.frombuffer(h[: dim * 4], dtype=np.uint8).copy()
-    arr = (raw.astype(np.float32) / 255.0) - 0.5  # Map to [-0.5, 0.5]
+    arr: FloatArray = (raw.astype(np.float32) / np.float32(255.0)) - np.float32(0.5)
     arr = arr[:dim]
     # Normalize to unit length
     norm = np.linalg.norm(arr)
     if norm > 0:
         arr = arr / norm
-    return arr
+    return np.asarray(arr, dtype=np.float32)
 
 
 @click.command()

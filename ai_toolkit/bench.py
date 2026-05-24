@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import statistics
 import time
-from typing import Callable
+from typing import Callable, TypedDict
 
 import click
 from rich.console import Console
@@ -13,11 +13,25 @@ from rich.table import Table
 console = Console()
 
 
+class BenchmarkResult(TypedDict):
+    """Structured benchmark measurements."""
+
+    runs: int
+    latencies: list[float]
+    avg_latency: float
+    std_latency: float
+    min_latency: float
+    max_latency: float
+    avg_output_similarity: float
+    output_variance: float
+    outputs: list[str]
+
+
 def benchmark_function(
     func: Callable[[], str],
     runs: int = 5,
     warmup: int = 1,
-) -> dict[str, object]:
+) -> BenchmarkResult:
     """Benchmark a callable, measuring latency and output variance.
 
     Returns timing statistics and output samples.

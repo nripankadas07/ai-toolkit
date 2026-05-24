@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TypedDict
 
 import click
 import tiktoken
@@ -11,8 +12,17 @@ from rich.table import Table
 
 console = Console()
 
+
+class ModelPricing(TypedDict):
+    """Pricing metadata for one model."""
+
+    encoding: str
+    input_per_1m: float
+    output_per_1m: float
+
+
 # Pricing per 1M tokens (input) for common models — approximate, for estimation only
-MODEL_PRICING: dict[str, dict[str, float]] = {
+MODEL_PRICING: dict[str, ModelPricing] = {
     "gpt-4": {"encoding": "cl100k_base", "input_per_1m": 30.0, "output_per_1m": 60.0},
     "gpt-4-turbo": {"encoding": "cl100k_base", "input_per_1m": 10.0, "output_per_1m": 30.0},
     "gpt-4o": {"encoding": "cl100k_base", "input_per_1m": 2.50, "output_per_1m": 10.0},
@@ -41,8 +51,12 @@ def estimate_cost(token_count: int, model: str, direction: str = "input") -> flo
     """Estimate cost in USD for a given token count and model."""
     if model not in MODEL_PRICING:
         return None
-    key = f"{direction}_per_1m"
-    rate = MODEL_PRICING[model].get(key, 0)
+    if direction == "input":
+        rate = MODEL_PRICING[model]["input_per_1m"]
+    elif direction == "output":
+        rate = MODEL_PRICING[model]["output_per_1m"]
+    else:
+        return None
     return (token_count / 1_000_000) * rate
 
 
