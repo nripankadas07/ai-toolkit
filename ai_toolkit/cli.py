@@ -43,11 +43,11 @@ def text() -> None:
 
 
 # Register subcommands
-from ai_toolkit.embeddings import compare  # noqa: E402
-from ai_toolkit.tokens import count, split  # noqa: E402
-from ai_toolkit.diff import outputs  # noqa: E402
 from ai_toolkit.bench import prompt  # noqa: E402
+from ai_toolkit.diff import outputs  # noqa: E402
+from ai_toolkit.embeddings import compare  # noqa: E402
 from ai_toolkit.text_stats import stats  # noqa: E402
+from ai_toolkit.tokens import count, split  # noqa: E402
 
 embeddings.add_command(compare)
 tokens.add_command(count)

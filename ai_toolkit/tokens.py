@@ -37,9 +37,7 @@ def split_tokens(text: str, encoding_name: str = "cl100k_base") -> list[str]:
     return [enc.decode([tid]) for tid in token_ids]
 
 
-def estimate_cost(
-    token_count: int, model: str, direction: str = "input"
-) -> float | None:
+def estimate_cost(token_count: int, model: str, direction: str = "input") -> float | None:
     """Estimate cost in USD for a given token count and model."""
     if model not in MODEL_PRICING:
         return None

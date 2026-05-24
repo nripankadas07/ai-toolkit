@@ -4,10 +4,10 @@ import numpy as np
 import pytest
 
 from ai_toolkit.embeddings import (
+    _hash_embedding,
     cosine_similarity,
     dot_product,
     euclidean_distance,
-    _hash_embedding,
 )
 
 

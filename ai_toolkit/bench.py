@@ -9,7 +9,6 @@ from typing import Callable
 import click
 from rich.console import Console
 from rich.table import Table
-from rich.progress import track
 
 console = Console()
 
@@ -97,6 +96,7 @@ def prompt(prompt_text: str, runs: int, warmup: int, json_output: bool) -> None:
 
     if json_output:
         import json
+
         output = {
             "prompt": prompt_text,
             "runs": results["runs"],

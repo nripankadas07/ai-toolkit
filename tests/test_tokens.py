@@ -2,11 +2,12 @@
 
 import pytest
 
-from ai_toolkit.tokens import count_tokens, split_tokens, estimate_cost
+from ai_toolkit.tokens import count_tokens, estimate_cost, split_tokens
 
 # tiktoken requires downloading encoding files — skip if unavailable
 try:
     import tiktoken
+
     tiktoken.get_encoding("cl100k_base")
     HAS_TIKTOKEN = True
 except Exception:

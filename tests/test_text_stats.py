@@ -2,7 +2,7 @@
 
 import pytest
 
-from ai_toolkit.text_stats import analyze_text, _count_syllables
+from ai_toolkit.text_stats import _count_syllables, analyze_text
 
 
 class TestAnalyzeText:

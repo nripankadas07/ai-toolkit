@@ -28,8 +28,7 @@ def analyze_text(text: str) -> dict[str, object]:
     paragraph_count = len(paragraphs)
 
     avg_word_length = (
-        sum(len(w.strip(".,!?;:\"'()[]{}")) for w in words) / word_count
-        if word_count > 0 else 0
+        sum(len(w.strip(".,!?;:\"'()[]{}")) for w in words) / word_count if word_count > 0 else 0
     )
     avg_words_per_sentence = word_count / sentence_count if sentence_count > 0 else 0
 
@@ -37,13 +36,17 @@ def analyze_text(text: str) -> dict[str, object]:
     avg_syllables_per_word = total_syllables / word_count if word_count > 0 else 0
 
     if sentence_count > 0 and word_count > 0:
-        fk_grade = (0.39 * (word_count / sentence_count) + 11.8 * (total_syllables / word_count) - 15.59)
+        fk_grade = (
+            0.39 * (word_count / sentence_count) + 11.8 * (total_syllables / word_count) - 15.59
+        )
         fk_grade = max(0, round(fk_grade, 1))
     else:
         fk_grade = 0
 
     if sentence_count > 0 and word_count > 0:
-        fre = (206.835 - 1.015 * (word_count / sentence_count) - 84.6 * (total_syllables / word_count))
+        fre = (
+            206.835 - 1.015 * (word_count / sentence_count) - 84.6 * (total_syllables / word_count)
+        )
         fre = max(0, min(100, round(fre, 1)))
     else:
         fre = 0
@@ -124,6 +127,7 @@ def stats(text: str | None, file: str | None, json_output: bool) -> None:
 
     if json_output:
         import json
+
         result["source"] = source
         click.echo(json.dumps(result, indent=2))
     else:

@@ -2,7 +2,7 @@
 
 import pytest
 
-from ai_toolkit.diff import word_diff, compute_similarity, diff_stats
+from ai_toolkit.diff import compute_similarity, diff_stats, word_diff
 
 
 class TestWordDiff:
